@@ -1,9 +1,67 @@
-<!doctype html>
-<html>
-  <head>
-    <title>This is the title of the webpage!</title>
-  </head>
-  <body>
-    <p>This is an example paragraph. Anything in the <strong>body</strong> tag will appear on the page, just like this <strong>p</strong> tag and its contents.</p>
-  </body>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Telegram канал</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    .post {
+      border-bottom: 1px solid #ddd;
+      padding: 20px 0;
+    }
+    h2 { margin-bottom: 5px; }
+    .date { color: gray; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<h1>Последние посты</h1>
+<div id="feed">Загрузка...</div>
+
+<script>
+async function loadFeed() {
+  const rssUrl = "https://rsshub.app/telegram/channel/barammatbaay";
+
+  const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(rssUrl);
+
+  const res = await fetch(proxy);
+  const data = await res.json();
+
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(data.contents, "text/xml");
+
+  const items = xml.querySelectorAll("item");
+  let html = "";
+
+  items.forEach((item, i) => {
+    if (i < 10) {
+      const title = item.querySelector("title")?.textContent || "";
+      const link = item.querySelector("link")?.textContent || "";
+      const desc = item.querySelector("description")?.textContent || "";
+      const date = item.querySelector("pubDate")?.textContent || "";
+
+      html += `
+        <div class="post">
+          <h2>${title}</h2>
+          <div class="date">${date}</div>
+          <div>${desc}</div>
+          <p><a href="${link}" target="_blank">Открыть в Telegram</a></p>
+        </div>
+      `;
+    }
+  });
+
+  document.getElementById("feed").innerHTML = html;
+}
+
+loadFeed();
+</script>
+
+</body>
 </html>
