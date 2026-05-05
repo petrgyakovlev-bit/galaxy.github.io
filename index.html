@@ -26,18 +26,25 @@
 
 <script>
 async function loadFeed() {
-  const rssUrl = "https://rsshub.app/telegram/channel/barammatbaay";
+  const rssUrl = "https://rsshub.app/telegram/channel/your_channel";
 
-  const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(rssUrl);
+  const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(rssUrl);
 
-  const res = await fetch(proxy);
-  const data = await res.json();
+  const res = await fetch(proxyUrl);
+  const text = await res.text();
 
   const parser = new DOMParser();
-  const xml = parser.parseFromString(data.contents, "text/xml");
+  const xml = parser.parseFromString(text, "text/xml");
 
   const items = xml.querySelectorAll("item");
+
   let html = "";
+
+  if (!items.length) {
+    document.getElementById("feed").innerHTML =
+      "❌ Нет данных. Проверь RSS ссылку";
+    return;
+  }
 
   items.forEach((item, i) => {
     if (i < 10) {
@@ -49,9 +56,9 @@ async function loadFeed() {
       html += `
         <div class="post">
           <h2>${title}</h2>
-          <div class="date">${date}</div>
+          <div style="color:gray;font-size:12px">${date}</div>
           <div>${desc}</div>
-          <p><a href="${link}" target="_blank">Открыть в Telegram</a></p>
+          <a href="${link}" target="_blank">Открыть</a>
         </div>
       `;
     }
