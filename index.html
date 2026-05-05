@@ -26,9 +26,9 @@
 
 <script>
 async function loadFeed() {
-  const rssUrl = "https://rsshub.app/telegram/channel/barammatbaay";
+  const rssUrl = "https://rsshub.app/telegram/channel/your_channel";
 
-  const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(rssUrl);
+  const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rssUrl);
 
   const res = await fetch(proxyUrl);
   const text = await res.text();
@@ -42,7 +42,7 @@ async function loadFeed() {
 
   if (!items.length) {
     document.getElementById("feed").innerHTML =
-      "❌ Нет данных. Проверь RSS ссылку";
+      "❌ RSS пустой или недоступен";
     return;
   }
 
