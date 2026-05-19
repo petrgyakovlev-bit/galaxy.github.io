@@ -7,8 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Supabase JS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -23,6 +21,7 @@
             margin: 0;
         }
 
+        /* ========== ПРИВЕТСТВЕННОЕ ОКНО ========== */
         .welcome-overlay {
             position: fixed;
             top: 0;
@@ -31,18 +30,26 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 10000;
             display: flex;
             align-items: center;
             justify-content: center;
+            animation: fadeInOverlay 0.4s ease;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .welcome-overlay.closing {
-            animation: fadeOut 0.3s ease forwards;
+            animation: fadeOutOverlay 0.5s ease forwards;
         }
 
-        @keyframes fadeOut {
-            to { opacity: 0; visibility: hidden; }
+        @keyframes fadeOutOverlay {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
 
         .welcome-modal {
@@ -53,7 +60,17 @@
             width: 90%;
             text-align: center;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.95); }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .welcome-photo-container {
@@ -66,12 +83,20 @@
             border: 4px solid #4f46e5;
             aspect-ratio: 16 / 10;
             background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .welcome-photo-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .welcome-photo-placeholder {
+            color: #94a3b8;
+            font-size: 3rem;
         }
 
         .welcome-title {
@@ -104,7 +129,19 @@
             font-weight: 800;
             border-radius: 3rem;
             cursor: pointer;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s;
             font-family: inherit;
+            letter-spacing: 0.5px;
+        }
+
+        .welcome-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 35px rgba(79, 70, 229, 0.55);
+        }
+
+        .welcome-btn:active {
+            transform: translateY(1px);
         }
 
         .welcome-skip {
@@ -114,14 +151,19 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 0.9rem;
+            transition: color 0.2s;
             background: none;
             border: none;
             font-family: inherit;
-            margin: 1rem auto 0;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .welcome-skip:hover { color: #4f46e5; }
+        .welcome-skip:hover {
+            color: #4f46e5;
+        }
 
+        /* ========== ОСТАЛЬНЫЕ СТИЛИ ========== */
         .container {
             max-width: 950px;
             width: 100%;
@@ -145,6 +187,10 @@
             display: flex;
             align-items: center;
             gap: 0.8rem;
+        }
+        .class-badge {
+            display: flex;
+            align-items: center;
         }
 
         .site-title h1 {
@@ -177,6 +223,7 @@
             border-radius: 2rem;
             cursor: pointer;
             color: #64748b;
+            transition: all 0.25s;
             font-family: inherit;
         }
 
@@ -186,19 +233,40 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
+        .tab-btn:hover:not(.active) { color: #4f46e5; }
+
         .section { display: none; }
         .section.active { display: block; }
 
+        /* Стили для скрываемой формы */
         .add-news-section {
             background: #f8fafc;
             border-radius: 1.8rem;
             padding: 1.6rem;
             margin-bottom: 2rem;
             border: 1px solid #e2e8f0;
-            display: none;
+            display: none; /* по умолчанию скрыта */
+            animation: fadeInForm 0.3s ease;
         }
 
-        .add-news-section.visible { display: block; }
+        @keyframes fadeInForm {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .add-news-section.visible {
+            display: block;
+        }
+
+        .form-title {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+        }
 
         .form-grid {
             display: flex;
@@ -226,7 +294,15 @@
             font-size: 1rem;
             background: white;
             outline: none;
+            resize: vertical;
         }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.2);
+        }
+
+        .author-input { max-width: 280px; }
 
         .file-upload-area {
             border: 2px dashed #cbd5e1;
@@ -235,7 +311,13 @@
             text-align: center;
             background: white;
             cursor: pointer;
+            transition: all 0.2s;
             position: relative;
+        }
+
+        .file-upload-area:hover {
+            border-color: #4f46e5;
+            background: #fafaff;
         }
 
         .file-upload-area input[type="file"] {
@@ -246,6 +328,11 @@
             top: 0;
             left: 0;
             cursor: pointer;
+        }
+
+        .upload-placeholder {
+            color: #64748b;
+            font-weight: 600;
         }
 
         .image-preview-container {
@@ -263,6 +350,7 @@
             border-radius: 1rem;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid white;
         }
 
         .preview-item img {
@@ -281,7 +369,18 @@
             border-radius: 50%;
             width: 22px;
             height: 22px;
+            font-size: 14px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.5rem;
+            gap: 0.8rem;
         }
 
         .btn {
@@ -293,14 +392,24 @@
             border-radius: 2.5rem;
             font-size: 1rem;
             cursor: pointer;
+            box-shadow: 0 8px 18px rgba(79,70,229,0.35);
+            transition: all 0.25s;
             font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 22px rgba(79,70,229,0.45);
         }
 
         .btn-outline {
             background: white;
             color: #4f46e5;
             border: 2px solid #4f46e5;
+            box-shadow: none;
         }
+
+        .btn-outline:hover { background: #f5f3ff; }
 
         .news-feed {
             display: flex;
@@ -315,16 +424,19 @@
             font-weight: 600;
             background: #f1f5f9;
             border-radius: 1.5rem;
+            border: 1px dashed #cbd5e1;
         }
 
         .news-card {
             background: white;
             border-radius: 1.5rem;
             padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
             border: 1px solid #f1f5f9;
             display: flex;
             flex-direction: column;
             gap: 0.7rem;
+            word-break: break-word;
         }
 
         .card-header {
@@ -332,6 +444,7 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 0.8rem;
         }
 
         .author-tag {
@@ -356,12 +469,14 @@
             font-size: 1.05rem;
             line-height: 1.5;
             color: #0f172a;
+            font-weight: 500;
         }
 
         .news-images-row {
             display: flex;
             flex-wrap: wrap;
             gap: 0.6rem;
+            margin-top: 0.3rem;
         }
 
         .news-thumb {
@@ -370,27 +485,36 @@
             object-fit: cover;
             border-radius: 1rem;
             cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            border: 2px solid white;
         }
+
+        .news-thumb:hover { transform: scale(1.03); }
 
         .delete-btn {
             background: #f8fafc;
             border: none;
             color: #94a3b8;
+            font-size: 1.2rem;
             cursor: pointer;
             padding: 0.3rem 0.5rem;
             border-radius: 0.8rem;
-            width: fit-content;
+            margin-left: auto;
         }
 
-        .delete-btn:hover { color: #ef4444; }
-
-        .feed-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 0.8rem;
+        .delete-btn:hover {
+            color: #ef4444;
+            background: #fee2e2;
         }
 
+        hr {
+            border: none;
+            border-top: 1px solid #e9eef2;
+            margin: 0.3rem 0 0;
+        }
+
+        /* Стили для кнопки-плюса */
         .add-news-toggle-btn {
             background: linear-gradient(135deg, #4f46e5, #6d28d9);
             color: white;
@@ -399,75 +523,68 @@
             height: 38px;
             border-radius: 50%;
             font-size: 1.5rem;
+            font-weight: 700;
             cursor: pointer;
+            box-shadow: 0 6px 14px rgba(79,70,229,0.35);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            line-height: 1;
         }
 
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.2rem;
+        .add-news-toggle-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 18px rgba(79,70,229,0.5);
         }
 
-        .gallery-item {
+        .feed-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .tg-post {
             background: white;
-            border-radius: 1.5rem;
-            overflow: hidden;
-            border: 1px solid #f1f5f9;
+            border-radius: 1.2rem;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e8ecf1;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.02);
         }
 
-        .gallery-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            cursor: pointer;
+        .tg-post-date {
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
 
-        .gallery-item-info { padding: 1rem; }
+        .tg-post-text {
+            color: #1e293b;
+            line-height: 1.5;
+        }
 
-        .tetris-container {
+        .tg-photos {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-        }
-
-        .tetris-game canvas {
-            border: 3px solid #4f46e5;
-            border-radius: 1rem;
-            background: #0a0a1a;
-        }
-
-        .leaderboard {
-            background: #f8fafc;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            min-width: 220px;
-        }
-
-        .leaderboard table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .leaderboard th, .leaderboard td {
-            padding: 0.6rem;
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .save-score-row {
-            display: flex;
             gap: 0.5rem;
-            margin-top: 1rem;
-            justify-content: center;
+            margin-top: 0.8rem;
         }
 
-        .save-score-row input {
-            width: 130px;
-            padding: 0.5rem;
+        .tg-photo {
+            max-width: 200px;
+            max-height: 200px;
             border-radius: 1rem;
-            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
+
+        .tg-photo:hover { transform: scale(1.05); }
 
         .lightbox {
             display: none;
@@ -495,80 +612,310 @@
             font-size: 2.5rem;
             cursor: pointer;
         }
+
+        .refresh-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: inherit;
+            margin-bottom: 1.5rem;
+        }
+
+        .refresh-btn:hover { background: #4338ca; }
+
+        .gallery-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            transition: all 0.25s;
+            border: 1px solid #f1f5f9;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 28px rgba(0,0,0,0.12);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .gallery-item-info {
+            padding: 1rem;
+        }
+
+        .gallery-item-text {
+            font-weight: 600;
+            color: #1e1b4b;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 0.3rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .gallery-item-author {
+            color: #64748b;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .gallery-item-date {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            margin-top: 0.2rem;
+        }
+
+        .tetris-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .tetris-game { text-align: center; }
+
+        .tetris-game canvas {
+            border: 3px solid #4f46e5;
+            border-radius: 1rem;
+            background: #0a0a1a;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .tetris-score {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #4f46e5;
+            margin: 0.8rem 0;
+        }
+
+        .tetris-controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .tetris-controls button {
+            width: 55px;
+            height: 55px;
+            font-size: 1.5rem;
+            border: 2px solid #4f46e5;
+            background: white;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .tetris-controls button:active {
+            background: #4f46e5;
+            color: white;
+            transform: scale(0.9);
+        }
+
+        .leaderboard {
+            background: #f8fafc;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            min-width: 220px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .leaderboard h3 {
+            color: #1e1b4b;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .leaderboard table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard th, .leaderboard td {
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+        }
+
+        .leaderboard th {
+            background: #4f46e5;
+            color: white;
+            font-weight: 800;
+        }
+
+        .leaderboard tr:nth-child(even) { background: #f1f5f9; }
+
+        .save-score-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .save-score-row input {
+            width: 130px;
+            padding: 0.5rem;
+            border-radius: 1rem;
+            border: 2px solid #e2e8f0;
+            font-family: inherit;
+            text-align: center;
+        }
+
+        .save-score-row button {
+            padding: 0.5rem 1rem;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        @media (max-width: 650px) {
+            body { padding: 0.8rem; }
+            .container { padding: 1.5rem; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .tetris-container { flex-direction: column; align-items: center; }
+            .tab-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .welcome-modal { padding: 1.5rem; }
+            .welcome-title { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- ========== ПРИВЕТСТВЕННОЕ ВСПЛЫВАЮЩЕЕ ОКНО ========== -->
     <div class="welcome-overlay" id="welcomeOverlay">
         <div class="welcome-modal">
             <div class="welcome-photo-container">
-                <img src="https://api.telegram.org/file/bot8776620555:AAEprKjWryt6soMpEU8zS0J7IiLR6156vb8/photos/file_2.jpg" alt="Наш класс">
+                <img src="https://api.telegram.org/file/bot8776620555:AAEprKjWryt6soMpEU8zS0J7IiLR6156vb8/photos/file_2.jpg" alt="Наш класс" id="welcomePhoto">
             </div>
             <h2 class="welcome-title">👋 Добро пожаловать!</h2>
             <p class="welcome-subtitle">10-А класс приветствует тебя</p>
             <p class="welcome-text">
-                Здесь ты найдёшь свежие новости, фотографии с мероприятий и даже сможешь поиграть в тетрис!
+                Здесь ты найдёшь свежие новости, фотографии с мероприятий, 
+                сообщения из нашего Telegram-канала и даже сможешь поиграть в тетрис!
             </p>
-            <button class="welcome-btn" id="closeWelcomeBtn">🚀 На сайт!</button>
-            <button class="welcome-skip" id="skipWelcomeBtn">Пропустить</button>
+            <button class="welcome-btn" onclick="closeWelcome()">🚀 На сайт!</button>
+            <button class="welcome-skip" onclick="closeWelcome()">Пропустить</button>
         </div>
     </div>
 
+    <!-- ========== ОСНОВНОЙ САЙТ ========== -->
     <div class="container">
         <div class="header">
             <div class="logo-area">
-                <img src="https://sun1-23.userapi.com/s/v1/ig2/Yul8thzla-rpPRILOL8yrxTtG3-Uhqtltu1vQ3rSw27olMpT9TnPsrnzMScgnJ6JI0v6X_8tDDu7aarIunSw1hEE.jpg?quality=95&crop=9,0,1005,1005&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&cs=240x240" alt="Школа" style="height: 80px;">
+                <img src="https://sun1-23.userapi.com/s/v1/ig2/Yul8thzla-rpPRILOL8yrxTtG3-Uhqtltu1vQ3rSw27olMpT9TnPsrnzMScgnJ6JI0v6X_8tDDu7aarIunSw1hEE.jpg?quality=95&crop=9,0,1005,1005&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720&ava=1&cs=240x240" alt="Школа" style="height: 100px;">
                 <div class="site-title">
-                    <h1>📰 Классные новости 10-А</h1>
+                    <h1>📰 Классные новости 10-А СОШ №7</h1>
                     <p>Будь в курсе событий нашего класса</p>
                 </div>
             </div>
-            <div class="tab-switcher" id="tabSwitcher">
-                <button class="tab-btn active" data-tab="news">📋 Новости</button>
-                <button class="tab-btn" data-tab="gallery">🖼️ Галерея</button>
-                <button class="tab-btn" data-tab="tetris">🎮 Тетрис</button>
+            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <div class="tab-switcher" id="tabSwitcher">
+                    <button class="tab-btn active" data-tab="news">📋 Новости</button>
+                    <button class="tab-btn" data-tab="gallery">🖼️ Галерея</button>
+                    <button class="tab-btn" data-tab="telegram">📡 Telegram</button>
+                    <button class="tab-btn" data-tab="tetris">🎮 Тетрис</button>
+                </div>
+                <div id="newsCounter" style="background:#f1f5f9;padding:0.4rem 1.2rem;border-radius:2rem;font-weight:700;color:#334155;font-size:0.9rem;">
+                    📋 <span id="counterValue">0</span>
+                </div>
             </div>
         </div>
 
+        <!-- Секция НОВОСТИ -->
         <div id="newsSection" class="section active">
+            <!-- Скрытая форма добавления -->
             <div class="add-news-section" id="addNewsFormContainer">
+                <div class="form-title"><span>✏️</span> Добавить новость</div>
                 <form id="newsForm" class="form-grid">
                     <div class="input-group">
-                        <label>Твоё имя</label>
-                        <input type="text" id="authorInput" placeholder="Например: Маша Иванова" required>
+                        <label for="authorInput">Твоё имя</label>
+                        <input type="text" id="authorInput" class="author-input" placeholder="Например: Маша Иванова" required>
                     </div>
                     <div class="input-group">
-                        <label>Текст новости</label>
+                        <label for="newsTextInput">Текст новости</label>
                         <textarea id="newsTextInput" rows="3" placeholder="Опиши событие..." required></textarea>
                     </div>
                     <div class="input-group">
-                        <label>📸 Фото</label>
+                        <label>📸 Прикрепить фото</label>
                         <div class="file-upload-area">
                             <input type="file" id="photoInput" accept="image/jpeg,image/png,image/gif,image/webp" multiple>
-                            <div>🖼️ Нажми, чтобы выбрать фото</div>
+                            <div class="upload-placeholder">
+                                <span style="font-size:1.8rem;">🖼️</span><br>
+                                <span>Нажми, чтобы выбрать фото</span>
+                            </div>
                         </div>
                         <div class="image-preview-container" id="imagePreviewContainer"></div>
                     </div>
                     <div class="button-row">
-                        <button type="button" class="btn btn-outline" id="clearPhotosBtn">Очистить</button>
+                        <button type="button" class="btn btn-outline" id="clearPhotosBtn" style="display:none;">🗑️ Очистить</button>
                         <button type="submit" class="btn">📨 Опубликовать</button>
                     </div>
                 </form>
             </div>
+
+            <!-- Заголовок ленты с кнопкой-плюсом -->
             <div class="feed-header">
-                <h2>📌 Лента новостей</h2>
-                <button class="add-news-toggle-btn" id="toggleFormBtn">+</button>
+                <h2 style="font-weight:800;color:#1e1b4b;font-size:1.4rem;">📌 Лента новостей</h2>
+                <button class="add-news-toggle-btn" id="toggleFormBtn" title="Добавить новость">+</button>
             </div>
             <div id="newsFeedContainer" class="news-feed"></div>
         </div>
 
+        <!-- Секция ГАЛЕРЕЯ -->
         <div id="gallerySection" class="section">
-            <h2>🖼️ Фотогалерея класса</h2>
+            <div class="gallery-header">
+                <h2 style="font-weight:800;color:#1e1b4b;font-size:1.4rem;">🖼️ Фотогалерея класса</h2>
+                <span id="galleryCounter" style="color:#64748b;font-weight:600;"></span>
+            </div>
             <div id="galleryGrid" class="gallery-grid"></div>
         </div>
 
+        <!-- Секция TELEGRAM -->
+        <div id="telegramSection" class="section">
+            <h2 style="font-weight:800;color:#1e1b4b;font-size:1.4rem;margin-bottom:1rem;">📡 Сообщения из канала</h2>
+            <button class="refresh-btn" onclick="fetchTelegramPosts()">🔄 Обновить</button>
+            <div id="telegram-posts"></div>
+        </div>
+
+        <!-- Секция ТЕТРИС -->
         <div id="tetrisSection" class="section">
-            <h2 style="text-align:center;">🎮 Тетрис</h2>
+            <h2 style="font-weight:800;color:#1e1b4b;font-size:1.4rem;margin-bottom:1rem;text-align:center;">🎮 Тетрис</h2>
             <div class="tetris-container">
                 <div class="tetris-game">
                     <canvas id="tetrisCanvas" width="300" height="600"></canvas>
@@ -577,11 +924,11 @@
                         <button onclick="moveLeft()">⬅️</button>
                         <button onclick="rotate()">🔄</button>
                         <button onclick="moveRight()">➡️</button>
-                        <button onclick="hardDrop()">⬇️ Уронить</button>
+                        <button onclick="hardDrop()" style="width:120px;">⬇️ Уронить</button>
                     </div>
                 </div>
                 <div class="leaderboard">
-                    <h3>🏅 Лидеры класса</h3>
+                    <h3>🏅 Лидеры 10А Класса</h3>
                     <table>
                         <thead><tr><th>#</th><th>Имя</th><th>Очки</th></tr></thead>
                         <tbody id="leaderboardBody"><tr><td colspan="3">Нет рекордов</td></tr></tbody>
@@ -595,360 +942,414 @@
         </div>
     </div>
 
+    <!-- Лайтбокс -->
     <div id="lightbox" class="lightbox">
         <span class="lightbox-close" id="lightboxClose">&times;</span>
-        <img id="lightboxImage" src="">
+        <img id="lightboxImage" src="" alt="Просмотр фото">
     </div>
 
     <script>
-        // ========== ПРОСТАЯ ЛОКАЛЬНАЯ БАЗА ДАННЫХ (ДЛЯ ТЕСТА) ==========
-        // Чтобы сайт работал сразу без Supabase, используем localStorage
-        // Позже можно заменить на Supabase
-        
-        let newsArray = [];
-        let selectedFiles = [];
-        
-        // Загрузка из localStorage
-        function loadData() {
-            const saved = localStorage.getItem('class10a_news');
-            if (saved) {
-                newsArray = JSON.parse(saved);
-            } else {
-                // Демо-новости
-                newsArray = [
-                    { id: '1', author: 'Классный руководитель', text: 'Добро пожаловать на доску новостей 10-А!', date: new Date().toISOString(), photos: [] },
-                    { id: '2', author: 'Староста', text: 'Не забудьте про сбор макулатуры в пятницу!', date: new Date(Date.now() - 86400000).toISOString(), photos: [] }
-                ];
-                saveData();
+        // ========== ПРИВЕТСТВЕННОЕ ОКНО ==========
+        function closeWelcome() {
+            const overlay = document.getElementById('welcomeOverlay');
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+        }
+
+        document.getElementById('welcomeOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeWelcome();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const overlay = document.getElementById('welcomeOverlay');
+                if (overlay.style.display !== 'none') closeWelcome();
             }
-        }
-        
-        function saveData() {
-            localStorage.setItem('class10a_news', JSON.stringify(newsArray));
-        }
-        
-        function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
-        
-        function fmtDate(iso) {
-            return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
-        }
-        
-        function esc(str) {
-            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        }
-        
-        function fileToDataURL(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = e => resolve(e.target.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-        
-        async function updatePreview() {
-            const files = Array.from(document.getElementById('photoInput').files);
-            selectedFiles = files;
-            const container = document.getElementById('imagePreviewContainer');
-            container.innerHTML = '';
-            for (let file of files) {
-                const url = await fileToDataURL(file);
-                const div = document.createElement('div');
-                div.className = 'preview-item';
-                div.innerHTML = `<img src="${url}"><button class="remove-preview-btn" data-name="${file.name}">✕</button>`;
-                container.appendChild(div);
-            }
-            document.querySelectorAll('.remove-preview-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const name = btn.dataset.name;
-                    selectedFiles = selectedFiles.filter(f => f.name !== name);
-                    const dt = new DataTransfer();
-                    selectedFiles.forEach(f => dt.items.add(f));
-                    document.getElementById('photoInput').files = dt.files;
-                    updatePreview();
-                });
-            });
-        }
-        
-        function clearPhotos() {
-            document.getElementById('photoInput').value = '';
-            selectedFiles = [];
-            document.getElementById('imagePreviewContainer').innerHTML = '';
-        }
-        
-        async function addNews(author, text, files) {
-            const photos = [];
-            for (let file of files) {
-                photos.push(await fileToDataURL(file));
-            }
-            newsArray.unshift({
-                id: genId(),
-                author: author.trim(),
-                text: text.trim(),
-                date: new Date().toISOString(),
-                photos: photos
-            });
-            saveData();
-            renderAll();
-        }
-        
-        function deleteNews(id) {
-            newsArray = newsArray.filter(n => n.id !== id);
-            saveData();
-            renderAll();
-        }
-        
-        function renderNews() {
+        });
+
+        // ========== ЛОГИКА ПОКАЗА/СКРЫТИЯ ФОРМЫ ==========
+        const formContainer = document.getElementById('addNewsFormContainer');
+        const toggleBtn = document.getElementById('toggleFormBtn');
+
+        toggleBtn.addEventListener('click', function() {
+            formContainer.classList.toggle('visible');
+        });
+
+        // ========== НОВОСТИ С ФОТО ==========
+        (function(){
+            const STORAGE_KEY = 'classNews_v3';
+            let newsArray = [];
+            let selectedFiles = [];
+            const form = document.getElementById('newsForm');
+            const authorInp = document.getElementById('authorInput');
+            const textInp = document.getElementById('newsTextInput');
+            const photoInput = document.getElementById('photoInput');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const clearBtn = document.getElementById('clearPhotosBtn');
             const feed = document.getElementById('newsFeedContainer');
-            if (!newsArray.length) {
-                feed.innerHTML = '<div class="empty-message">📭 Новостей пока нет. Добавьте первую!</div>';
-                return;
-            }
-            feed.innerHTML = newsArray.map(n => {
-                let photosHTML = '';
-                if (n.photos && n.photos.length) {
-                    photosHTML = '<div class="news-images-row">' + 
-                        n.photos.map(p => `<img src="${p}" class="news-thumb" onclick="openLightbox('${p}')" alt="фото">`).join('') + 
-                        '</div>';
-                }
-                return `
-                    <div class="news-card" data-id="${n.id}">
-                        <div class="card-header">
-                            <span class="author-tag">👤 ${esc(n.author)}</span>
-                            <span class="date">📅 ${fmtDate(n.date)}</span>
-                        </div>
-                        <div class="news-text">${esc(n.text)}</div>
-                        ${photosHTML}
-                        <button class="delete-btn" data-id="${n.id}">🗑️ Удалить</button>
-                    </div>
-                `;
-            }).join('');
-            
-            // Добавляем обработчики удаления
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (confirm('Удалить новость?')) deleteNews(btn.dataset.id);
-                });
-            });
-        }
-        
-        function renderGallery() {
-            const allPhotos = [];
-            newsArray.forEach(n => {
-                if (n.photos && n.photos.length) {
-                    n.photos.forEach(p => allPhotos.push({ src: p, text: n.text, author: n.author, date: n.date }));
-                }
-            });
+            const counter = document.getElementById('counterValue');
             const galleryGrid = document.getElementById('galleryGrid');
-            if (!allPhotos.length) {
-                galleryGrid.innerHTML = '<div class="empty-message">🖼️ Фотографий пока нет</div>';
-                return;
-            }
-            galleryGrid.innerHTML = allPhotos.map(p => `
-                <div class="gallery-item">
-                    <img src="${p.src}" onclick="openLightbox('${p.src}')" alt="фото">
-                    <div class="gallery-item-info">
-                        <div class="gallery-item-text">${esc(p.text)}</div>
-                        <div class="gallery-item-author">👤 ${esc(p.author)}</div>
-                        <div class="gallery-item-date">📅 ${fmtDate(p.date)}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        function renderAll() {
-            renderNews();
-            renderGallery();
-        }
-        
-        // ========== ТЕТРИС ==========
-        const canvas = document.getElementById('tetrisCanvas');
-        const ctx = canvas.getContext('2d');
-        const ROWS = 20, COLS = 10, CELL = 30;
-        let board, piece, score, gameOver, loop, tetrisInit = false;
-        
-        const SHAPES = [
-            [[1,1,1,1]],
-            [[1,1],[1,1]],
-            [[0,1,0],[1,1,1]],
-            [[1,1,0],[0,1,1]],
-            [[0,1,1],[1,1,0]],
-            [[1,0,0],[1,1,1]],
-            [[0,0,1],[1,1,1]]
-        ];
-        const COLORS = ['#00f0f0', '#f0f000', '#a000f0', '#00f000', '#f00000', '#f0a000', '#0000f0'];
-        
-        function createBoard() { return Array.from({ length: ROWS }, () => Array(COLS).fill(0)); }
-        
-        function randomPiece() {
-            const i = Math.floor(Math.random() * SHAPES.length);
-            const shape = SHAPES[i].map(r => [...r]);
-            return { shape, color: COLORS[i], x: Math.floor(COLS / 2) - Math.floor(shape[0].length / 2), y: 0 };
-        }
-        
-        function draw() {
-            ctx.clearRect(0, 0, 300, 600);
-            for (let r = 0; r < ROWS; r++) {
-                for (let c = 0; c < COLS; c++) {
-                    if (board[r][c]) {
-                        ctx.fillStyle = board[r][c];
-                        ctx.fillRect(c * CELL, r * CELL, CELL - 1, CELL - 1);
-                    }
+            const galleryCounter = document.getElementById('galleryCounter');
+
+            function load(){
+                const d = localStorage.getItem(STORAGE_KEY);
+                if(d){
+                    try{ newsArray = JSON.parse(d); if(!Array.isArray(newsArray)) newsArray = []; }
+                    catch(e){ newsArray = []; }
+                } else {
+                    newsArray = [
+                        {id:'d1', author:'Классный руководитель', text:'Добро пожаловать на доску новостей 10-А!', date: new Date().toISOString(), photos:[]},
+                        {id:'d2', author:'Староста', text:'Не забудьте про сбор макулатуры в пятницу!', date: new Date(Date.now()-3600000).toISOString(), photos:[]}
+                    ];
+                    save();
                 }
             }
-            if (piece) {
-                piece.shape.forEach((row, dr) => {
-                    row.forEach((val, dc) => {
-                        if (val) {
-                            ctx.fillStyle = piece.color;
-                            ctx.fillRect((piece.x + dc) * CELL, (piece.y + dr) * CELL, CELL - 1, CELL - 1);
-                        }
+            function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(newsArray)); }
+            function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+            function fmtDate(iso){ return new Date(iso).toLocaleDateString('ru-RU',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}); }
+            function genId(){ return Date.now().toString(36)+Math.random().toString(36).substring(2,8); }
+            function fileToDataURL(file){
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            async function updatePreview(){
+                const files = Array.from(photoInput.files);
+                selectedFiles = files;
+                previewContainer.innerHTML = '';
+                if(files.length > 0){
+                    clearBtn.style.display = 'inline-flex';
+                    for(let file of files){
+                        const url = await fileToDataURL(file);
+                        const div = document.createElement('div');
+                        div.className = 'preview-item';
+                        div.innerHTML = `<img src="${url}" alt="preview"><button class="remove-preview-btn" data-name="${file.name}">✕</button>`;
+                        previewContainer.appendChild(div);
+                    }
+                } else {
+                    clearBtn.style.display = 'none';
+                }
+                document.querySelectorAll('.remove-preview-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e){
+                        e.stopPropagation();
+                        const name = this.dataset.name;
+                        selectedFiles = selectedFiles.filter(f => f.name !== name);
+                        const dt = new DataTransfer();
+                        selectedFiles.forEach(f => dt.items.add(f));
+                        photoInput.files = dt.files;
+                        updatePreview();
                     });
                 });
             }
-        }
-        
-        function collides(shape, x, y) {
-            for (let r = 0; r < shape.length; r++) {
-                for (let c = 0; c < shape[r].length; c++) {
-                    if (shape[r][c]) {
-                        const nx = x + c, ny = y + r;
-                        if (nx < 0 || nx >= COLS || ny >= ROWS) return true;
-                        if (ny >= 0 && board[ny][nx]) return true;
-                    }
+
+            function clearPhotos(){
+                photoInput.value = '';
+                selectedFiles = [];
+                previewContainer.innerHTML = '';
+                clearBtn.style.display = 'none';
+            }
+
+            async function addNews(author, text, files){
+                const photos = [];
+                for(let file of files){
+                    const url = await fileToDataURL(file);
+                    photos.push(url);
+                }
+                newsArray.push({
+                    id: genId(),
+                    author: author.trim(),
+                    text: text.trim(),
+                    date: new Date().toISOString(),
+                    photos: photos
+                });
+                save();
+                renderAll();
+            }
+
+            function deleteNews(id){
+                newsArray = newsArray.filter(n => n.id !== id);
+                save();
+                renderAll();
+            }
+
+            function renderNews(){
+                counter.textContent = newsArray.length;
+                if(!newsArray.length){
+                    feed.innerHTML = '<div class="empty-message"><span style="font-size:2rem;">📭</span><span>Новостей пока нет.</span></div>';
+                } else {
+                    const sorted = [...newsArray].sort((a,b)=>new Date(b.date)-new Date(a.date));
+                    feed.innerHTML = sorted.map(n=>{
+                        let photosHTML = '';
+                        if(n.photos && n.photos.length > 0){
+                            photosHTML = '<div class="news-images-row">' + n.photos.map(p =>
+                                `<img src="${p}" class="news-thumb" onclick="openLightbox('${p}')" alt="фото">`
+                            ).join('') + '</div>';
+                        }
+                        return `
+                        <div class="news-card" data-id="${n.id}">
+                            <div class="card-header">
+                                <span class="author-tag">👤 ${esc(n.author)}</span>
+                                <span class="date">📅 ${fmtDate(n.date)}</span>
+                            </div>
+                            <div class="news-text">${esc(n.text)}</div>
+                            ${photosHTML}
+                            <hr>
+                            <button class="delete-btn" data-id="${n.id}">🗑️</button>
+                        </div>`;
+                    }).join('');
                 }
             }
-            return false;
-        }
-        
-        function place() {
-            piece.shape.forEach((row, dr) => {
-                row.forEach((val, dc) => {
-                    if (val) {
-                        const ny = piece.y + dr;
-                        if (ny < 0) gameOver = true;
-                        else board[ny][piece.x + dc] = piece.color;
+
+            function renderGallery(){
+                const allPhotos = [];
+                newsArray.forEach(n => {
+                    if(n.photos && n.photos.length){
+                        n.photos.forEach(p => allPhotos.push({src:p, text:n.text, author:n.author, date:n.date}));
                     }
                 });
-            });
-            let cleared = 0;
-            for (let r = ROWS - 1; r >= 0; r--) {
-                if (board[r].every(c => c)) {
-                    board.splice(r, 1);
-                    board.unshift(Array(COLS).fill(0));
-                    r++;
-                    cleared++;
+                galleryCounter.textContent = allPhotos.length + ' фото';
+                if(!allPhotos.length){
+                    galleryGrid.innerHTML = '<div class="empty-message"><span style="font-size:2rem;">🖼️</span><span>Фотографий пока нет.</span></div>';
+                } else {
+                    allPhotos.sort((a,b) => new Date(b.date) - new Date(a.date));
+                    galleryGrid.innerHTML = allPhotos.map(p => `
+                        <div class="gallery-item">
+                            <img src="${p.src}" onclick="openLightbox('${p.src}')" alt="фото">
+                            <div class="gallery-item-info">
+                                <div class="gallery-item-text">${esc(p.text)}</div>
+                                <div class="gallery-item-author">👤 ${esc(p.author)}</div>
+                                <div class="gallery-item-date">📅 ${fmtDate(p.date)}</div>
+                            </div>
+                        </div>`).join('');
                 }
             }
-            const pts = [0, 100, 300, 500, 800];
-            score += pts[cleared] || 0;
-            document.getElementById('tetrisScore').textContent = score;
-            if (!gameOver) piece = randomPiece();
-            if (gameOver || collides(piece.shape, piece.x, piece.y)) gameOver = true;
-        }
-        
-        function moveDown() {
-            if (gameOver) return false;
-            if (!collides(piece.shape, piece.x, piece.y + 1)) {
-                piece.y++;
-                draw();
-                return true;
+
+            function renderAll(){
+                renderNews();
+                renderGallery();
             }
-            place();
-            draw();
-            if (gameOver) endGame();
+
+            form.addEventListener('submit', async function(e){
+                e.preventDefault();
+                const a = authorInp.value.trim();
+                const t = textInp.value.trim();
+                if(!a||!t){ alert('Заполни имя и текст!'); return; }
+                await addNews(a, t, selectedFiles);
+                authorInp.value=''; textInp.value='';
+                clearPhotos();
+                authorInp.focus();
+                // После публикации можно скрыть форму
+                formContainer.classList.remove('visible');
+            });
+
+            feed.addEventListener('click', function(e){
+                const btn = e.target.closest('.delete-btn');
+                if(btn && confirm('Удалить новость?')) deleteNews(btn.dataset.id);
+            });
+
+            photoInput.addEventListener('change', updatePreview);
+            clearBtn.addEventListener('click', clearPhotos);
+
+            load(); renderAll();
+        })();
+
+        // ========== ВКЛАДКИ ==========
+        const tabs = document.querySelectorAll('.tab-btn');
+        const sec = {
+            news: document.getElementById('newsSection'),
+            gallery: document.getElementById('gallerySection'),
+            telegram: document.getElementById('telegramSection'),
+            tetris: document.getElementById('tetrisSection')
+        };
+        tabs.forEach(b=>{
+            b.addEventListener('click', function(){
+                tabs.forEach(x=>x.classList.remove('active'));
+                this.classList.add('active');
+                Object.values(sec).forEach(s=>s.classList.remove('active'));
+                sec[this.dataset.tab].classList.add('active');
+                if(this.dataset.tab==='telegram') fetchTelegramPosts();
+                if(this.dataset.tab==='tetris'){ initTetris(); renderLeaderboard(); }
+            });
+        });
+
+        // ========== TELEGRAM ==========
+        const BOT_TOKEN = '8776620555:AAEprKjWryt6soMpEU8zS0J7IiLR6156vb8';
+        const CHAT_ID = '-1003781986877';
+        const fileCache = {};
+
+        async function getFileUrl(fileId){
+            if(fileCache[fileId]) return fileCache[fileId];
+            try{
+                const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+                const d = await r.json();
+                if(!d.ok) return null;
+                const url = `https://api.telegram.org/file/bot${BOT_TOKEN}/${d.result.file_path}`;
+                fileCache[fileId] = url;
+                return url;
+            }catch(e){ return null; }
+        }
+
+        async function fetchTelegramPosts(){
+            const c = document.getElementById('telegram-posts');
+            c.innerHTML = '<p style="color:#64748b;">⏳ Загружаю...</p>';
+            try{
+                const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-5`);
+                const d = await r.json();
+                if(!d.ok) throw new Error(d.description);
+                const posts = d.result.filter(u=>u.message&&u.message.chat.id==CHAT_ID).map(u=>u.message).sort((a,b)=>b.date-a.date);
+                await displayPosts(posts);
+            }catch(e){
+                c.innerHTML = '<p style="color:#ef4444;">❌ Ошибка загрузки</p>';
+            }
+        }
+
+        async function displayPosts(posts){
+            const c = document.getElementById('telegram-posts');
+            if(!posts.length){ c.innerHTML='<div class="empty-message">📭 Сообщений пока нет.</div>'; return; }
+            const h = await Promise.all(posts.map(async p=>{
+                let txt = p.text ? `<div class="tg-post-text">${esc(p.text)}</div>` : '';
+                if(p.caption && !p.text) txt = `<div class="tg-post-text">${esc(p.caption)}</div>`;
+                let ph = '';
+                if(p.photo&&p.photo.length){
+                    const url = await getFileUrl(p.photo[p.photo.length-1].file_id);
+                    if(url) ph = `<div class="tg-photos"><img src="${url}" class="tg-photo" onclick="openLightbox('${url}')"></div>`;
+                }
+                if(!txt&&!ph) txt = '<div class="tg-post-text" style="color:#94a3b8;">📎 Сообщение без текста</div>';
+                return `<div class="tg-post"><div class="tg-post-date">📅 ${new Date(p.date*1000).toLocaleString('ru-RU')}</div>${txt}${ph}</div>`;
+            }));
+            c.innerHTML = h.join('');
+        }
+
+        function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+        // Лайтбокс
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightboxImage');
+        window.openLightbox = src => { lbImg.src=src; lb.classList.add('active'); };
+        document.getElementById('lightboxClose').addEventListener('click',()=>lb.classList.remove('active'));
+        lb.addEventListener('click',e=>{ if(e.target===lb) lb.classList.remove('active'); });
+        document.addEventListener('keydown',e=>{ if(e.key==='Escape' && lb.classList.contains('active')) lb.classList.remove('active'); });
+
+        // ========== ТЕТРИС ==========
+        const canvas = document.getElementById('tetrisCanvas');
+        const ctx = canvas.getContext('2d');
+        const ROWS=20, COLS=10, CELL=30;
+        let board, piece, score, gameOver, loop, tetrisInit=false;
+        const SHAPES = [
+            [[1,1,1,1]], [[1,1],[1,1]], [[0,1,0],[1,1,1]],
+            [[1,1,0],[0,1,1]], [[0,1,1],[1,1,0]],
+            [[1,0,0],[1,1,1]], [[0,0,1],[1,1,1]]
+        ];
+        const COLORS = ['#00f0f0','#f0f000','#a000f0','#00f000','#f00000','#f0a000','#0000f0'];
+
+        function createBoard(){ return Array.from({length:ROWS},()=>Array(COLS).fill(0)); }
+        function randomPiece(){
+            const i = Math.floor(Math.random()*SHAPES.length);
+            const s = SHAPES[i].map(r=>[...r]);
+            return {shape:s, color:COLORS[i], x:Math.floor(COLS/2)-Math.floor(s[0].length/2), y:0};
+        }
+
+        function draw(){
+            ctx.clearRect(0,0,300,600);
+            for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(board[r][c]){
+                ctx.fillStyle=board[r][c]; ctx.fillRect(c*CELL,r*CELL,CELL-1,CELL-1);
+                ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.fillRect(c*CELL,r*CELL,CELL-1,5);
+            }
+            if(piece) piece.shape.forEach((row,dr)=>row.forEach((val,dc)=>{
+                if(val){
+                    ctx.fillStyle=piece.color;
+                    ctx.fillRect((piece.x+dc)*CELL,(piece.y+dr)*CELL,CELL-1,CELL-1);
+                    ctx.fillStyle='rgba(255,255,255,0.3)';
+                    ctx.fillRect((piece.x+dc)*CELL,(piece.y+dr)*CELL,CELL-1,5);
+                }
+            }));
+        }
+
+        function collides(shape,x,y){
+            for(let r=0;r<shape.length;r++) for(let c=0;c<shape[r].length;c++) if(shape[r][c]){
+                const nx=x+c, ny=y+r;
+                if(nx<0||nx>=COLS||ny>=ROWS) return true;
+                if(ny>=0&&board[ny][nx]) return true;
+            }
             return false;
         }
-        
-        function moveLeft() { if (!gameOver && !collides(piece.shape, piece.x - 1, piece.y)) { piece.x--; draw(); } }
-        function moveRight() { if (!gameOver && !collides(piece.shape, piece.x + 1, piece.y)) { piece.x++; draw(); } }
-        function rotate() {
-            if (gameOver) return;
-            const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
-            if (!collides(rotated, piece.x, piece.y)) { piece.shape = rotated; draw(); }
+
+        function place(){
+            piece.shape.forEach((row,dr)=>row.forEach((val,dc)=>{
+                if(val){
+                    const ny=piece.y+dr;
+                    if(ny<0){ gameOver=true; return; }
+                    board[ny][piece.x+dc]=piece.color;
+                }
+            }));
+            let cleared=0;
+            for(let r=ROWS-1;r>=0;r--) if(board[r].every(c=>c)){ board.splice(r,1); board.unshift(Array(COLS).fill(0)); r++; cleared++; }
+            const pts=[0,100,300,500,800]; score+=pts[cleared]||0;
+            document.getElementById('tetrisScore').textContent=score;
+            if(!gameOver) piece=randomPiece();
+            if(gameOver||collides(piece.shape,piece.x,piece.y)) gameOver=true;
         }
-        function hardDrop() {
-            if (gameOver) return;
-            while (!collides(piece.shape, piece.x, piece.y + 1)) piece.y++;
-            place();
+
+        function moveDown(){
+            if(gameOver) return false;
+            if(!collides(piece.shape,piece.x,piece.y+1)){ piece.y++; draw(); return true; }
+            place(); draw();
+            if(gameOver) endGame();
+            return false;
+        }
+
+        function moveLeft(){
+            if(!gameOver&&!collides(piece.shape,piece.x-1,piece.y)){ piece.x--; draw(); }
+        }
+        function moveRight(){
+            if(!gameOver&&!collides(piece.shape,piece.x+1,piece.y)){ piece.x++; draw(); }
+        }
+        function rotate(){
+            if(gameOver) return;
+            const rot = piece.shape[0].map((_,i)=>piece.shape.map(r=>r[i]).reverse());
+            if(!collides(rot,piece.x,piece.y)){ piece.shape=rot; draw(); }
+        }
+        function hardDrop(){
+            if(gameOver) return;
+            while(!collides(piece.shape,piece.x,piece.y+1)) piece.y++;
+            place(); draw();
+            if(gameOver) endGame();
+        }
+
+        function endGame(){
+            clearInterval(loop); loop=null;
+            ctx.fillStyle='rgba(0,0,0,0.7)'; ctx.fillRect(0,260,300,80);
+            ctx.fillStyle='white'; ctx.font='bold 24px Nunito'; ctx.textAlign='center';
+            ctx.fillText('ИГРА ОКОНЧЕНА',150,295);
+            ctx.fillStyle='#f0f000'; ctx.font='bold 16px Nunito';
+            ctx.fillText('Очки: '+score,150,320);
+            document.getElementById('saveScoreRow').style.display='flex';
+            document.getElementById('playerName').focus();
+        }
+
+        function resetGame(){
+            board=createBoard(); piece=randomPiece(); score=0; gameOver=false;
+            document.getElementById('tetrisScore').textContent='0';
+            document.getElementById('saveScoreRow').style.display='none';
+            document.getElementById('playerName').value='';
+            if(loop) clearInterval(loop);
+            loop=setInterval(moveDown,500);
             draw();
-            if (gameOver) endGame();
         }
-        
-        function endGame() {
-            clearInterval(loop);
-            loop = null;
-            ctx.fillStyle = 'rgba(0,0,0,0.7)';
-            ctx.fillRect(0, 260, 300, 80);
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 24px Nunito';
-            ctx.textAlign = 'center';
-            ctx.fillText('ИГРА ОКОНЧЕНА', 150, 295);
-            ctx.fillStyle = '#f0f000';
-            ctx.font = 'bold 16px Nunito';
-            ctx.fillText('Очки: ' + score, 150, 320);
-            document.getElementById('saveScoreRow').style.display = 'flex';
-        }
-        
-        function resetGame() {
-            board = createBoard();
-            piece = randomPiece();
-            score = 0;
-            gameOver = false;
-            document.getElementById('tetrisScore').textContent = '0';
-            document.getElementById('saveScoreRow').style.display = 'none';
-            if (loop) clearInterval(loop);
-            loop = setInterval(moveDown, 400);
-            draw();
-        }
-        
-        // Лидерборд
-        let leaderboard = [];
-        
-        function loadLeaderboard() {
-            const saved = localStorage.getItem('tetris_leaderboard_10a');
-            if (saved) leaderboard = JSON.parse(saved);
-            else leaderboard = [];
-            renderLeaderboard();
-        }
-        
-        function renderLeaderboard() {
-            const tbody = document.getElementById('leaderboardBody');
-            if (!leaderboard.length) {
-                tbody.innerHTML = '<tr><td colspan="3">Нет рекордов</td></tr>';
-                return;
-            }
-            leaderboard.sort((a, b) => b.score - a.score);
-            const medals = ['🥇', '🥈', '🥉'];
-            tbody.innerHTML = leaderboard.slice(0, 10).map((e, i) => `
-                <tr>
-                    <td>${i < 3 ? medals[i] : (i + 1)}</td>
-                    <td>${esc(e.name)}</td>
-                    <td><strong>${e.score}</strong></td>
-                </tr>
-            `).join('');
-        }
-        
-        function saveScore() {
-            const name = document.getElementById('playerName').value.trim();
-            if (!name) { alert('Введи имя!'); return; }
-            if (score === 0) { alert('Нельзя сохранить 0 очков!'); return; }
-            leaderboard.push({ name, score, date: new Date().toISOString() });
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, 20);
-            localStorage.setItem('tetris_leaderboard_10a', JSON.stringify(leaderboard));
-            renderLeaderboard();
-            document.getElementById('saveScoreRow').style.display = 'none';
+
+        function initTetris(){
+            if(tetrisInit) return;
+            tetrisInit=true;
             resetGame();
-        }
-        
-        function initTetris() {
-            if (tetrisInit) return;
-            tetrisInit = true;
-            resetGame();
-            document.addEventListener('keydown', (e) => {
-                if (!document.getElementById('tetrisSection').classList.contains('active')) return;
-                switch(e.key) {
+            document.addEventListener('keydown',function(e){
+                if(!document.getElementById('tetrisSection').classList.contains('active')) return;
+                switch(e.key){
                     case 'ArrowLeft': e.preventDefault(); moveLeft(); break;
                     case 'ArrowRight': e.preventDefault(); moveRight(); break;
                     case 'ArrowDown': e.preventDefault(); moveDown(); break;
@@ -957,84 +1358,45 @@
                 }
             });
         }
-        
-        // ========== ВКЛАДКИ И ЗАКРЫТИЕ ОКНА ==========
-        function closeWelcome() {
-            const overlay = document.getElementById('welcomeOverlay');
-            overlay.classList.add('closing');
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 300);
+
+        const LB_KEY = 'tetrisLeader_v1';
+        function getLB(){ const d=localStorage.getItem(LB_KEY); return d?JSON.parse(d):[]; }
+
+        function saveScore(){
+            const name = document.getElementById('playerName').value.trim();
+            if(!name){ alert('Введи имя!'); return; }
+            if(score===0){ alert('Нельзя сохранить 0!'); return; }
+            const lb = getLB();
+            lb.push({name,score,date:new Date().toISOString()});
+            lb.sort((a,b)=>b.score-a.score);
+            localStorage.setItem(LB_KEY,JSON.stringify(lb.slice(0,20)));
+            renderLeaderboard();
+            document.getElementById('saveScoreRow').style.display='none';
+            resetGame();
         }
-        
-        // Инициализация
-        document.getElementById('closeWelcomeBtn').addEventListener('click', closeWelcome);
-        document.getElementById('skipWelcomeBtn').addEventListener('click', closeWelcome);
-        document.getElementById('welcomeOverlay').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('welcomeOverlay')) closeWelcome();
+
+        function renderLeaderboard(){
+            const tbody = document.getElementById('leaderboardBody');
+            const lb = getLB();
+            if(!lb.length){ tbody.innerHTML='<tr><td colspan="3">Нет рекордов</td></tr>'; return; }
+            const medals=['🥇','🥈','🥉'];
+            tbody.innerHTML = lb.slice(0,10).map((e,i)=>`
+                <tr>
+                    <td>${i<3?medals[i]:(i+1)}</td>
+                    <td>${esc(e.name)}</td>
+                    <td><strong>${e.score}</strong></td>
+                </tr>`).join('');
+        }
+
+        window.moveLeft=moveLeft; window.moveRight=moveRight;
+        window.rotate=rotate; window.hardDrop=hardDrop;
+        window.saveScore=saveScore; window.fetchTelegramPosts=fetchTelegramPosts;
+        renderLeaderboard();
+
+        document.addEventListener('DOMContentLoaded',()=>{
+            fetchTelegramPosts();
+            setInterval(fetchTelegramPosts,5*60*1000);
         });
-        
-        // Вкладки
-        const tabs = document.querySelectorAll('.tab-btn');
-        const sections = {
-            news: document.getElementById('newsSection'),
-            gallery: document.getElementById('gallerySection'),
-            tetris: document.getElementById('tetrisSection')
-        };
-        tabs.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabs.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                Object.values(sections).forEach(s => s.classList.remove('active'));
-                sections[btn.dataset.tab].classList.add('active');
-                if (btn.dataset.tab === 'tetris') initTetris();
-            });
-        });
-        
-        // Форма новостей
-        document.getElementById('toggleFormBtn').addEventListener('click', () => {
-            document.getElementById('addNewsFormContainer').classList.toggle('visible');
-        });
-        
-        document.getElementById('newsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const author = document.getElementById('authorInput').value.trim();
-            const text = document.getElementById('newsTextInput').value.trim();
-            if (!author || !text) { alert('Заполни имя и текст!'); return; }
-            await addNews(author, text, selectedFiles);
-            document.getElementById('authorInput').value = '';
-            document.getElementById('newsTextInput').value = '';
-            clearPhotos();
-            document.getElementById('addNewsFormContainer').classList.remove('visible');
-        });
-        
-        document.getElementById('photoInput').addEventListener('change', updatePreview);
-        document.getElementById('clearPhotosBtn').addEventListener('click', clearPhotos);
-        
-        // Лайтбокс
-        window.openLightbox = (src) => {
-            document.getElementById('lightboxImage').src = src;
-            document.getElementById('lightbox').classList.add('active');
-        };
-        document.getElementById('lightboxClose').addEventListener('click', () => {
-            document.getElementById('lightbox').classList.remove('active');
-        });
-        document.getElementById('lightbox').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('lightbox')) {
-                document.getElementById('lightbox').classList.remove('active');
-            }
-        });
-        
-        // Запуск
-        loadData();
-        renderAll();
-        loadLeaderboard();
-        
-        window.moveLeft = moveLeft;
-        window.moveRight = moveRight;
-        window.rotate = rotate;
-        window.hardDrop = hardDrop;
-        window.saveScore = saveScore;
     </script>
 </body>
 </html>
